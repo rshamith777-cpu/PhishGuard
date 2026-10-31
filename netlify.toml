@@ -7,36 +7,18 @@
 
 [[redirects]]
   from = "/api/analyze"
-  to = "/.netlify/functions/api/analyze"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/api/analyze-batch"
-  to = "/.netlify/functions/api/analyze-batch"
+  to = "/.netlify/functions/analyze"
   status = 200
   force = true
 
 [[redirects]]
   from = "/api/health"
-  to = "/.netlify/functions/api/health"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/api/history"
-  to = "/.netlify/functions/api/history"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/api/export-html"
-  to = "/.netlify/functions/api/export-html"
+  to = "/.netlify/functions/health"
   status = 200
   force = true
 
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
+  to = "/.netlify/functions/api"
   status = 200
   force = true

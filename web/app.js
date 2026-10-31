@@ -91,18 +91,29 @@ document.addEventListener("DOMContentLoaded", () => {
     btnAnalyze.textContent = "INSPECTING...";
 
     try {
-      const response = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: targetUrl }),
-      });
+      let data = null;
+      try {
+        const response = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: targetUrl }),
+        });
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || "Failed to inspect URL");
+        if (response.ok) {
+          data = await response.json();
+        }
+      } catch (netErr) {
+        // Fallback to local deterministic engine if serverless API is unavailable
       }
 
-      const data = await response.json();
+      if (!data && typeof clientAnalyzeUrl === "function") {
+        data = clientAnalyzeUrl(targetUrl);
+      }
+
+      if (!data) {
+        throw new Error("Unable to analyze URL at this time.");
+      }
+
       currentResult = data;
       renderSingleResult(data);
     } catch (err) {
@@ -294,15 +305,29 @@ document.addEventListener("DOMContentLoaded", () => {
     btnBatchAnalyze.textContent = "INSPECTING BATCH...";
 
     try {
-      const response = await fetch("/api/analyze-batch", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ urls: rawLines }),
-      });
-      if (!response.ok) {
-        throw new Error("Batch request failed");
+      let data = null;
+      try {
+        const response = await fetch("/api/analyze-batch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ urls: rawLines }),
+        });
+        if (response.ok) {
+          data = await response.json();
+        }
+      } catch (netErr) {}
+
+      if (!data && typeof clientAnalyzeUrl === "function") {
+        const batchResults = rawLines.map(u => clientAnalyzeUrl(u));
+        data = {
+          total_inputs: batchResults.length,
+          successful_count: batchResults.length,
+          with_indicators_count: batchResults.filter(r => r.indicator_count > 0).length,
+          results: batchResults
+        };
       }
-      const data = await response.json();
+
+      if (!data) throw new Error("Batch request failed");
       currentBatchData = data;
       renderBatchResults(data);
     } catch (err) {
