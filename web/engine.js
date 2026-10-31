@@ -320,3 +320,4 @@ function clientAnalyzeUrl(rawUrl) {
     limitations: "Educational evaluation only. PhishGuard conducts local structural heuristic checks. It does not query live DNS, reputation databases, or inspect destination web content."
   };
 }
+

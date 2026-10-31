@@ -115,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       currentResult = data;
+      saveLocalHistory(data);
       renderSingleResult(data);
     } catch (err) {
       alert("Error: " + err.message);
@@ -329,6 +330,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!data) throw new Error("Batch request failed");
       currentBatchData = data;
+      if (data.results) {
+        data.results.forEach(r => saveLocalHistory(r));
+      }
       renderBatchResults(data);
     } catch (err) {
       alert("Error: " + err.message);
@@ -418,54 +422,96 @@ document.addEventListener("DOMContentLoaded", () => {
   const historyTbody = document.getElementById("history-tbody");
   const btnClearHistory = document.getElementById("btn-clear-history");
 
+  function saveLocalHistory(item) {
+    try {
+      const existing = JSON.parse(localStorage.getItem("phishguard_history") || "[]");
+      existing.unshift({
+        analysis_id: item.analysis_id,
+        timestamp: item.timestamp,
+        sanitized_url: item.sanitized_url || item.url,
+        indicator_count: item.indicator_count,
+        classification: item.classification
+      });
+      // Keep up to 50 most recent inspections
+      localStorage.setItem("phishguard_history", JSON.stringify(existing.slice(0, 50)));
+    } catch (e) {}
+  }
+
   async function loadHistory() {
+    let list = [];
     try {
       const res = await fetch("/api/history");
-      const list = await res.json();
-      historyTbody.innerHTML = "";
-      if (!list || list.length === 0) {
-        historyTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-secondary);padding:20px;">No local inspection logs found.</td></tr>`;
-        return;
+      if (res.ok) {
+        list = await res.json();
       }
-      list.forEach((item) => {
-        const tr = document.createElement("tr");
+    } catch (e) {}
 
-        const tdId = document.createElement("td");
-        tdId.style.fontFamily = "var(--font-mono)";
-        tdId.textContent = item.analysis_id;
-        tr.appendChild(tdId);
-
-        const tdTime = document.createElement("td");
-        tdTime.style.fontSize = "13px";
-        tdTime.textContent = item.timestamp;
-        tr.appendChild(tdTime);
-
-        const tdSan = document.createElement("td");
-        tdSan.style.fontFamily = "var(--font-mono)";
-        tdSan.style.wordBreak = "break-all";
-        tdSan.textContent = item.sanitized_url;
-        tr.appendChild(tdSan);
-
-        const tdCount = document.createElement("td");
-        tdCount.style.textAlign = "center";
-        tdCount.style.fontWeight = "700";
-        tdCount.textContent = item.indicator_count;
-        tr.appendChild(tdCount);
-
-        const tdClass = document.createElement("td");
-        tdClass.textContent = item.classification;
-        tr.appendChild(tdClass);
-
-        historyTbody.appendChild(tr);
-      });
-    } catch (e) {
-      console.error(e);
+    // Seamless fallback to browser localStorage if serverless has no persistent filesystem
+    if (!list || list.length === 0) {
+      try {
+        list = JSON.parse(localStorage.getItem("phishguard_history") || "[]");
+      } catch (e) {
+        list = [];
+      }
     }
+
+    historyTbody.innerHTML = "";
+    if (!list || list.length === 0) {
+      historyTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-secondary);padding:20px;">No local inspection logs found. Inspect a URL to see history!</td></tr>`;
+      return;
+    }
+
+    list.forEach((item) => {
+      const tr = document.createElement("tr");
+
+      const tdId = document.createElement("td");
+      tdId.style.fontFamily = "var(--font-mono)";
+      tdId.textContent = item.analysis_id;
+      tr.appendChild(tdId);
+
+      const tdTime = document.createElement("td");
+      tdTime.style.fontSize = "13px";
+      tdTime.textContent = item.timestamp;
+      tr.appendChild(tdTime);
+
+      const tdSan = document.createElement("td");
+      tdSan.style.fontFamily = "var(--font-mono)";
+      tdSan.style.wordBreak = "break-all";
+      tdSan.textContent = item.sanitized_url;
+      tr.appendChild(tdSan);
+
+      const tdCount = document.createElement("td");
+      tdCount.style.textAlign = "center";
+      tdCount.style.fontWeight = "700";
+      tdCount.textContent = item.indicator_count;
+      tr.appendChild(tdCount);
+
+      const tdClass = document.createElement("td");
+      const badge = document.createElement("span");
+      badge.className = "status-flag";
+      if (item.indicator_count === 0) {
+        badge.classList.add("clear");
+        badge.textContent = "CLEAR";
+      } else if (item.indicator_count <= 2) {
+        badge.style.background = "var(--accent-yellow)";
+        badge.textContent = "REVIEW";
+      } else {
+        badge.classList.add("flagged");
+        badge.textContent = "ELEVATED";
+      }
+      tdClass.appendChild(badge);
+      tr.appendChild(tdClass);
+
+      historyTbody.appendChild(tr);
+    });
   }
 
   btnClearHistory.addEventListener("click", async () => {
     if (confirm("Clear local audit logs?")) {
-      await fetch("/api/clear-history", { method: "POST" });
+      try {
+        await fetch("/api/clear-history", { method: "POST" });
+      } catch (e) {}
+      localStorage.removeItem("phishguard_history");
       loadHistory();
     }
   });
