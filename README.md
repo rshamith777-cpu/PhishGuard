@@ -293,17 +293,29 @@ To guard against false positives, legitimate production URLs are evaluated in `t
 
 ---
 
-## 14. Application Screenshots
+## 14. Visual Design & Application Screenshots
 
-The repository includes real terminal execution evidence stored under `screenshots/`:
+The repository includes visual design artwork, screenshots of the live interface, and execution evidence stored under `screenshots/`:
 
-### 1. Official Workbook Sample Run
+### 1. PhishGuard Defensive Intelligence Banner
+![PhishGuard Security Banner](screenshots/banner_illustration.png)  
+*Figure 1: Neo-Brutalist editorial concept illustrating URL inspection, structural heuristic analysis, and link safety awareness.*
+
+### 2. Multi-Agent Inspection Architecture
+![Multi-Agent Architecture](screenshots/agent_architecture.png)  
+*Figure 2: Deterministic multi-agent analysis topology (Structure, Hostname, Protocol, and Validation modules).*
+
+### 3. Local Web Interface (URL Inspector)
+![Local Web Interface Inspector](screenshots/web_ui_inspector.png)  
+*Figure 3: Neo-Brutalist browser interface running locally on `http://127.0.0.1:8765`.*
+
+### 4. Official Workbook Sample Run (CLI)
 ![Official Workbook Sample Execution](screenshots/sample_run.png)  
-*Figure 1: Full terminal execution of `python phishing_checker.py --samples` displaying heuristic findings for all five workbook samples and the verification summary.*
+*Figure 4: Full terminal execution of `python phishing_checker.py --samples` displaying heuristic findings for all five workbook samples and the verification summary.*
 
-### 2. Automated Test Results
+### 5. Automated Test Suite Execution
 ![Automated Test Suite Output](screenshots/test_results.png)  
-*Figure 2: Execution of the complete unit test suite validating all 29 tests.*
+*Figure 5: Execution of the complete unit test suite validating all 29 automated tests.*
 
 ---
 
