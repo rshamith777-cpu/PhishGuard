@@ -130,3 +130,4 @@ class handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json")
         self.end_headers()
         self.wfile.write(json.dumps({"error": "Endpoint not found"}).encode("utf-8"))
+
