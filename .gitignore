@@ -1,0 +1,33 @@
+# Python Bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Testing and coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Local reports and logs (retain structure via reports/.gitkeep)
+reports/*.json
+reports/*.csv
+reports/*.html
+!reports/.gitkeep
+
+# IDE and Editor artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS temporary files
+.DS_Store
+Thumbs.db
+

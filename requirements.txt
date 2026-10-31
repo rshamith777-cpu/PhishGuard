@@ -1,0 +1,6 @@
+# PhishGuard Dependency Specification
+# Standard Python 3.10+ standard libraries provide all core heuristic analysis,
+# web serving, and unit testing capabilities.
+# Optional modern development & linting tools:
+ruff>=0.1.0
+

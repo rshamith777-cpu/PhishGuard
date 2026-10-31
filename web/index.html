@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishGuard — Phishing URL Awareness & Intelligence Platform</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="#" class="brand" id="brand-link">
+        <div class="brand-symbol">P</div>
+        <div class="brand-name">PHISHGUARD</div>
+      </a>
+      <ul class="nav-links">
+        <li><button class="nav-btn active" data-tab="tab-inspector">INSPECTOR</button></li>
+        <li><button class="nav-btn" data-tab="tab-batch">BATCH</button></li>
+        <li><button class="nav-btn" data-tab="tab-reports">REPORTS & HISTORY</button></li>
+        <li><button class="nav-btn" data-tab="tab-how-it-works">HOW IT WORKS</button></li>
+      </ul>
+      <div class="nav-status">
+        <div class="status-dot"></div>
+        <span>LOCAL MODE (OFFLINE)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- TAB 1: URL INSPECTOR -->
+  <main id="tab-inspector" class="tab-content active">
+    <div class="container">
+      <div class="hero">
+        <div class="hero-tag">CYBERSECURITY / URL AWARENESS TOOL</div>
+        <h1 class="hero-title">Know before you click.</h1>
+        <p class="hero-subtitle">
+          Inspect suspicious URL structures, understand warning signs, and make more informed decisions before interacting with unknown links.
+        </p>
+      </div>
+
+      <!-- Inspector Input Card -->
+      <section class="card">
+        <h2 class="card-title">
+          <span>URL INSPECTOR</span>
+          <span style="font-size: 13px; font-weight: normal; color: var(--text-secondary);">Strictly offline analysis</span>
+        </h2>
+        
+        <div class="form-group">
+          <label for="url-input" class="form-label">Enter Target URL to Inspect</label>
+          <input type="text" id="url-input" class="input-text" placeholder="Paste a URL to inspect (e.g. http://192.0.2.10/account)..." autocomplete="off" spellcheck="false">
+        </div>
+
+        <div class="actions-row">
+          <button id="btn-analyze" class="btn btn-primary">ANALYSE URL &rarr;</button>
+          <button id="btn-clear" class="btn btn-secondary">CLEAR</button>
+          <div style="font-size: 13px; color: var(--text-secondary); margin-left: auto;">
+            Privacy: URL is analysed locally. Never opened or transmitted.
+          </div>
+        </div>
+
+        <!-- Sample Shortcuts -->
+        <div class="sample-pills">
+          <span class="sample-label">OFFICIAL WORKBOOK SAMPLES:</span>
+          <button class="pill-btn" data-sample="https://www.example.com/login">Sample 1 (Legitimate Structure)</button>
+          <button class="pill-btn" data-sample="http://192.0.2.10/account">Sample 2 (IP + HTTP)</button>
+          <button class="pill-btn" data-sample="http://example.com@sample.invalid/login">Sample 3 (@ Obfuscation)</button>
+          <button class="pill-btn" data-sample="https://a.b.c.d.e.example.invalid/path">Sample 4 (Many Segments)</button>
+          <button class="pill-btn" data-sample="https://xn--example.invalid/">Sample 5 (Punycode)</button>
+        </div>
+      </section>
+
+      <!-- Real Facts Section -->
+      <div class="facts-grid">
+        <div class="fact-card">
+          <div class="fact-num">12</div>
+          <div class="fact-title">Heuristic Checks</div>
+          <div class="fact-desc">6 EWB mandatory rules + 6 advanced defensive intelligence detectors (typosquatting, shorteners, compound spoofing, etc.).</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-num">04</div>
+          <div class="fact-title">Analysis Agents</div>
+          <div class="fact-desc">Structure, Hostname, Protocol, and Validation deterministic modules.</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-num">00</div>
+          <div class="fact-title">External URL Requests</div>
+          <div class="fact-desc">Zero telemetry, zero socket probes, and zero live connections to inspected URLs.</div>
+        </div>
+      </div>
+
+      <!-- Results Display Section -->
+      <section id="results-card" class="card" style="display: none; margin-top: 32px;">
+        <div class="result-header">
+          <div>
+            <h2 style="font-family: var(--font-heading); font-size: 24px; font-weight: 800;">INSPECTION REPORT</h2>
+            <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;" id="result-id-time"></div>
+          </div>
+          <div id="result-badge-container"></div>
+        </div>
+
+        <div class="result-meta">
+          <div><strong>Target:</strong> <span id="result-url-display" style="font-family: var(--font-mono); word-break: break-all;"></span></div>
+          <div><strong>Indicators Flagged:</strong> <span id="result-count-display" style="font-weight: 800;"></span> / 6</div>
+        </div>
+
+        <div class="notice-box">
+          <div class="notice-title">EDUCATIONAL NOTICE & SCOPE:</div>
+          <div id="result-summary-text" style="font-size: 14px;"></div>
+        </div>
+
+        <h3 style="font-family: var(--font-heading); font-size: 18px; margin: 24px 0 12px 0;">HEURISTIC FINDINGS</h3>
+        <div style="overflow-x: auto;">
+          <table class="findings-table">
+            <thead>
+              <tr>
+                <th style="width: 220px;">Check Name</th>
+                <th style="width: 100px; text-align: center;">State</th>
+                <th>Significance & Evidence</th>
+                <th style="width: 250px;">Limitations</th>
+                <th style="width: 180px;">Agent</th>
+              </tr>
+            </thead>
+            <tbody id="findings-tbody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <div style="background: var(--bg-primary); border: 2px solid var(--border-color); padding: 18px; margin: 24px 0;">
+          <h4 style="font-family: var(--font-heading); margin-bottom: 8px;">Recommended Safe Next Steps:</h4>
+          <ul id="safe-steps-list" style="padding-left: 20px; font-size: 14px;"></ul>
+        </div>
+
+        <div class="actions-row">
+          <button id="btn-copy-result" class="btn btn-secondary btn-sm">COPY SUMMARY</button>
+          <button id="btn-export-json" class="btn btn-secondary btn-sm">EXPORT JSON</button>
+          <button id="btn-export-html" class="btn btn-secondary btn-sm">EXPORT HTML REPORT</button>
+        </div>
+      </section>
+
+      <!-- Educational Editorial Explanation -->
+      <section class="card" style="margin-top: 32px; background: #FFF;">
+        <h3 class="card-title">Suspicious links are not always obvious.</h3>
+        <p style="margin-bottom: 14px; font-size: 15px;">
+          Phishing campaigns exploit human cognitive biases and interface limitations. Modern web browsers often collapse or truncate URLs on mobile screens, making subtle tricks—such as user-authentication syntax (@), multiple confusing subdomains, or lookalike internationalized characters (Punycode)—exceptionally effective.
+        </p>
+        <p style="font-size: 15px; color: var(--text-secondary);">
+          PhishGuard dissects the structural syntax of candidate web addresses to illustrate how threat actors construct deceptive links. By understanding the mechanical anatomy of a link, users and security analysts can identify anomalies without needing risky manual interactions.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <!-- TAB 2: BATCH ANALYSIS -->
+  <section id="tab-batch" class="tab-content">
+    <div class="container">
+      <div class="hero">
+        <div class="hero-tag">BULK INSPECTION</div>
+        <h1 class="hero-title">Batch URL Analysis</h1>
+        <p class="hero-subtitle">
+          Analyse multiple links simultaneously. Inspect up to 50 URLs separated by newlines with deterministic reporting and CSV export.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">ENTER MULTIPLE URLS</h2>
+        <div class="form-group">
+          <label for="batch-input" class="form-label">One URL per line</label>
+          <textarea id="batch-input" class="textarea-input" rows="8" placeholder="https://www.example.com/login&#10;http://192.0.2.10/account&#10;http://example.com@sample.invalid/login"></textarea>
+        </div>
+        <div class="actions-row">
+          <button id="btn-batch-analyze" class="btn btn-primary">ANALYSE BATCH &rarr;</button>
+          <button id="btn-batch-clear" class="btn btn-secondary">CLEAR</button>
+          <button id="btn-batch-load-samples" class="btn btn-yellow btn-sm">LOAD 5 EWB SAMPLES</button>
+        </div>
+      </div>
+
+      <!-- Batch Results Section -->
+      <div id="batch-results-card" class="card" style="display: none;">
+        <div class="result-header">
+          <div>
+            <h3 style="font-family: var(--font-heading); font-size: 22px;">BATCH ANALYSIS SUMMARY</h3>
+            <div id="batch-stats-summary" style="font-size: 14px; margin-top: 4px;"></div>
+          </div>
+          <div class="actions-row">
+            <button id="btn-batch-csv" class="btn btn-secondary btn-sm">DOWNLOAD CSV</button>
+            <button id="btn-batch-json" class="btn btn-secondary btn-sm">DOWNLOAD JSON</button>
+          </div>
+        </div>
+
+        <div class="batch-table-container">
+          <table class="findings-table">
+            <thead>
+              <tr>
+                <th style="width: 100px;">ID</th>
+                <th>Target URL</th>
+                <th style="width: 120px; text-align: center;">Indicators</th>
+                <th style="width: 180px;">Classification</th>
+                <th>Detected Flags</th>
+              </tr>
+            </thead>
+            <tbody id="batch-tbody">
+              <!-- Dynamically rendered -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 3: REPORTS & HISTORY -->
+  <section id="tab-reports" class="tab-content">
+    <div class="container">
+      <div class="hero">
+        <div class="hero-tag">AUDIT & COMPLIANCE</div>
+        <h1 class="hero-title">Inspection History</h1>
+        <p class="hero-subtitle">
+          Review recent locally analysed sessions. To protect confidentiality, sensitive query tokens and credentials are never stored.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="result-header">
+          <h2 class="card-title" style="margin-bottom:0;">LOCAL AUDIT LOG</h2>
+          <button id="btn-clear-history" class="btn btn-coral btn-sm">CLEAR LOGS</button>
+        </div>
+        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">
+          Notice: Audit history records sanitized hosts and detected indicators locally inside <code style="font-family: var(--font-mono);">reports/audit_history.json</code>.
+        </div>
+
+        <div class="batch-table-container">
+          <table class="findings-table">
+            <thead>
+              <tr>
+                <th style="width: 110px;">ID</th>
+                <th style="width: 180px;">Timestamp</th>
+                <th>Sanitized Endpoint</th>
+                <th style="width: 120px; text-align: center;">Count</th>
+                <th style="width: 180px;">Classification</th>
+              </tr>
+            </thead>
+            <tbody id="history-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 4: HOW IT WORKS -->
+  <section id="tab-how-it-works" class="tab-content">
+    <div class="container">
+      <div class="hero">
+        <div class="hero-tag">EDUCATIONAL METHODOLOGY</div>
+        <h1 class="hero-title">The 6 Detection Heuristics</h1>
+        <p class="hero-subtitle">
+          Detailed technical explanation of the structural checks specified in the EWB Cybersecurity Mini Project Workbook.
+        </p>
+      </div>
+
+      <div class="notice-box" style="margin-bottom: 32px;">
+        <div class="notice-title">IMPORTANT EDUCATIONAL BOUNDARY:</div>
+        <div>
+          "No listed warning signs" does NOT mean a URL is safe. Sophisticated phishing campaigns routinely register new domains, configure valid SSL/TLS certificates, and avoid structural anomalies. This system evaluates static syntax for education, not real-time reputation.
+        </div>
+      </div>
+
+      <div style="display: grid; gap: 24px;">
+        <!-- Check 1 -->
+        <div class="card">
+          <div style="font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--accent-blue);">CHECK 01 // STRUCTURE AGENT</div>
+          <h2 style="font-family: var(--font-heading); font-size: 20px; margin: 6px 0 12px 0;">Presence of '@' Symbol</h2>
+          <p style="margin-bottom: 8px;"><strong>Why it matters:</strong> In URI RFC 3986 syntax, the <code>@</code> character separates user credentials from the actual destination host. Attackers construct URLs like <code>http://trustedbank.com@malicious-host.invalid/</code> to trick users who only read the left part of the address.</p>
+          <p style="margin-bottom: 8px;"><strong>Fictional Example:</strong> <code>http://account.paypal.com@verify-login.invalid/</code></p>
+          <p style="font-size: 13px; color: var(--text-secondary);"><strong>Limitations:</strong> Legitimate web applications occasionally use <code>@</code> in URLs (e.g. webmail mailto handlers or API authentication strings).</p>
+        </div>
+
+        <!-- Check 2 -->
+        <div class="card">
+          <div style="font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--accent-blue);">CHECK 02 // STRUCTURE AGENT</div>
+          <h2 style="font-family: var(--font-heading); font-size: 20px; margin: 6px 0 12px 0;">URL Length Exceeding 100 Characters</h2>
+          <p style="margin-bottom: 8px;"><strong>Why it matters:</strong> Extremely long URLs often push the true destination or suspicious file extensions beyond the visible address bar on mobile devices or email clients.</p>
+          <p style="margin-bottom: 8px;"><strong>Fictional Example:</strong> <code>https://example.com/security/login/verification/session/user/auth/token/redirect/data/session-id-9817293817293817293817293817293871928371928371928371928371928371298371928371928371928371928371</code></p>
+          <p style="font-size: 13px; color: var(--text-secondary);"><strong>Limitations:</strong> Many legitimate cloud services, search queries, and OAuth 2.0 flows produce URLs longer than 100 characters.</p>
+        </div>
+
+        <!-- Check 3 -->
+        <div class="card">
+          <div style="font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--accent-blue);">CHECK 03 // HOSTNAME INTELLIGENCE AGENT</div>
+          <h2 style="font-family: var(--font-heading); font-size: 20px; margin: 6px 0 12px 0;">Direct IPv4 Address Hostname</h2>
+          <p style="margin-bottom: 8px;"><strong>Why it matters:</strong> Legitimate businesses operate under registered domain names. Threat actors sometimes use raw IP addresses to bypass domain-based threat intelligence lists and conceal organizational ownership.</p>
+          <p style="margin-bottom: 8px;"><strong>Fictional Example:</strong> <code>http://192.0.2.10/account/login</code></p>
+          <p style="font-size: 13px; color: var(--text-secondary);"><strong>Limitations:</strong> Direct IP addresses are standard for local networking (192.168.x.x, 10.x.x.x), IoT hardware, and temporary server administration.</p>
+        </div>
+
+        <!-- Check 4 -->
+        <div class="card">
+          <div style="font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--accent-blue);">CHECK 04 // HOSTNAME INTELLIGENCE AGENT</div>
+          <h2 style="font-family: var(--font-heading); font-size: 20px; margin: 6px 0 12px 0;">Multiple Hostname Segments (&ge; 5 Labels)</h2>
+          <p style="margin-bottom: 8px;"><strong>Why it matters:</strong> Attackers chain multiple subdomains to emulate trusted domain structures (e.g. <code>paypal.com.customer-support.verify.attacker.invalid</code>) where the true base domain is at the very end.</p>
+          <p style="margin-bottom: 8px;"><strong>Fictional Example:</strong> <code>https://a.b.c.d.e.example.invalid/path</code></p>
+          <p style="font-size: 13px; color: var(--text-secondary);"><strong>Limitations:</strong> Enterprise multi-region cloud services (e.g., AWS S3 bucket endpoints or Microsoft Azure services) legitimately use 5 or more segments.</p>
+        </div>
+
+        <!-- Check 5 -->
+        <div class="card">
+          <div style="font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--accent-blue);">CHECK 05 // HOSTNAME INTELLIGENCE AGENT</div>
+          <h2 style="font-family: var(--font-heading); font-size: 20px; margin: 6px 0 12px 0;">Punycode Hostname Encoding ('xn--')</h2>
+          <p style="margin-bottom: 8px;"><strong>Why it matters:</strong> Punycode allows Internationalized Domain Names (IDNs) in ASCII. Attackers use homograph attacks—substituting lookalike characters from Cyrillic or Greek alphabets for Latin letters—to impersonate genuine brands.</p>
+          <p style="margin-bottom: 8px;"><strong>Fictional Example:</strong> <code>https://xn--example.invalid/</code></p>
+          <p style="font-size: 13px; color: var(--text-secondary);"><strong>Limitations:</strong> Punycode is an essential international web standard enabling non-Latin languages for millions of users worldwide.</p>
+        </div>
+
+        <!-- Check 6 -->
+        <div class="card">
+          <div style="font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--accent-blue);">CHECK 06 // PROTOCOL ANALYSIS AGENT</div>
+          <h2 style="font-family: var(--font-heading); font-size: 20px; margin: 6px 0 12px 0;">Unencrypted HTTP Scheme</h2>
+          <p style="margin-bottom: 8px;"><strong>Why it matters:</strong> Plain HTTP lacks transport encryption. Sensitive data, login credentials, and session cookies are transmitted in cleartext, making them vulnerable to network interception.</p>
+          <p style="margin-bottom: 8px;"><strong>Fictional Example:</strong> <code>http://bank-portal.invalid/login</code></p>
+          <p style="font-size: 13px; color: var(--text-secondary);"><strong>Limitations:</strong> Most modern phishing websites now use valid HTTPS certificates. The presence of HTTPS alone does NOT prove a website is trustworthy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Neo-Brutalist Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div>
+        <strong>PHISHGUARD v1.0.0</strong> — Built for cybersecurity awareness and defensive education.
+      </div>
+      <div>
+        EWB Cybersecurity Mini Project Workbook Compliant | Local-First Architecture
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
